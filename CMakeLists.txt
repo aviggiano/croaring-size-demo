@@ -36,32 +36,15 @@ SET(CPP_ROARING_HEADERS ${roaring_SOURCE_DIR}/cpp/roaring64map.hh  ${roaring_SOU
 file(COPY  ${CPP_ROARING_HEADERS} DESTINATION ${roaring_SOURCE_DIR}/include/roaring)
 
 
-file(WRITE main.cpp "
-#include <iostream>
-#include \"roaring/roaring.hh\"
-int main() {
-  Roaring r1;
-  for (uint32_t i = 100; i < 1000; i++) {
-    r1.add(i);
-  }
-  std::cout << \"cardinality = \" << r1.cardinality() << std::endl;
-
-  return 0;
-}")
-
-
-
-add_executable(repro main.cpp)
-target_link_libraries(repro PUBLIC roaring)
 
 
 file(WRITE main.c "
 #include <stdio.h>
 #include \"roaring/roaring.h\"
 int main() {
-  roaring_bitmap_t *r1 = roaring_bitmap_create();
-  for (uint32_t i = 100; i < 1000; i++) roaring_bitmap_add(r1, i);
+  roaring_bitmap_t *r1 = roaring_bitmap_from_range(1, 1000, 1);
   printf(\"cardinality = %d\\n\", (int) roaring_bitmap_get_cardinality(r1));
+  printf(\"size in bytes = %d\\n\", (int) roaring_bitmap_size_in_bytes(r1));
   roaring_bitmap_free(r1);
   return 0;
 }")
